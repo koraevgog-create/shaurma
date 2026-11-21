@@ -163,3 +163,13 @@ body{background:#10140e;font-size:14px;letter-spacing:-.01em}
 @media(max-width:1300px){.hero-benefits{display:none}.hero-dashboard{grid-template-columns:1fr 1fr}}
 @media(max-width:950px){.main{margin-left:228px;width:calc(100% - 228px)}.dashboard-grid-main,.dashboard-grid-bottom{grid-template-columns:1fr}.dashboard-grid-main>:last-child,.dashboard-grid-bottom>:last-child{grid-column:auto}.dashboard-kpis{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:760px){.sidebar{width:250px}.main{width:100%;margin:0}.view{padding:18px 14px 45px}.hero-dashboard{display:flex;flex-direction:column;gap:0;padding:24px 18px}.hero-copy h1{font-size:31px}.hero-visual{min-height:210px;height:210px}.hero-visual img{width:110%;left:-5%;height:100%;top:0}.dashboard-kpis{grid-template-columns:repeat(2,minmax(0,1fr))}.dashboard-kpis .metric{font-size:18px}.dashboard-panel{min-height:0}}
+
+/* Four distinct crops of the product concept artwork rather than four duplicate thumbnails */
+.menu-mini>div{position:relative;background-image:radial-gradient(circle,#414b2a,#151b12)!important;isolation:isolate}
+.menu-mini>div:before{content:"";position:absolute;inset:0;z-index:2;background:radial-gradient(circle at center,transparent 46%,#131912a8 100%);pointer-events:none}
+.menu-mini img{position:absolute;max-width:none;width:310px;height:180px;object-fit:fill;transform:none;top:0;left:0;filter:drop-shadow(0 4px 5px #0007)}
+.menu-mini:nth-child(1) img{left:-160px;top:-7px}
+.menu-mini:nth-child(2) img{left:-104px;top:-23px}
+.menu-mini:nth-child(3) img{left:-25px;top:-46px}
+.menu-mini:nth-child(4) img{left:-157px;top:-55px}
+@media(max-width:760px){.menu-mini img{width:400px;height:232px}.menu-mini:nth-child(1) img{left:-207px;top:-10px}.menu-mini:nth-child(2) img{left:-134px;top:-31px}.menu-mini:nth-child(3) img{left:-32px;top:-59px}.menu-mini:nth-child(4) img{left:-204px;top:-72px}}
