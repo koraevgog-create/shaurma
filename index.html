@@ -1,0 +1,24 @@
+<!doctype html>
+<html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#101312"><meta name="description" content="SHAURMA LAB — центр управления открытием шаурмичной в Набережных Челнах."><title>SHAURMA LAB — Центр запуска</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Unbounded:wght@500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="./assets/styles.css"></head>
+<body>
+<div class="app">
+<aside class="sidebar" id="sidebar">
+<div class="brand"><div class="brand-symbol">S<span>•</span></div><div><strong>SHAURMA<span>LAB</span></strong><small>ЦЕНТР УПРАВЛЕНИЯ</small></div></div>
+<div class="sidebar-tag"><span class="live-dot"></span> ПРОЕКТ В РАЗРАБОТКЕ <span>v1.0</span></div>
+<div class="nav-group-title">ПРОЕКТ</div>
+<nav id="nav"></nav>
+<div class="sidebar-bottom"><div class="side-card"><div class="side-card-kicker">НАША ЦЕЛЬ</div><strong>От идеи — к первой прибыльной точке.</strong><p>Каждая цифра и решение — под контролем.</p></div><button id="exportBtn" class="side-action">↓ Экспортировать данные</button><label class="side-action import-action" for="importFile">↑ Импортировать данные</label><input type="file" id="importFile" accept=".json" hidden></div>
+</aside>
+<div class="mobile-overlay" id="overlay"></div>
+<main class="main">
+<header class="topbar"><button id="menuToggle" class="icon-button mobile-only" aria-label="Открыть меню">☰</button><div class="breadcrumb">БИЗНЕС-ПРОЕКТ <span>/</span> <strong id="breadcrumbPage">Обзор проекта</strong></div><div class="topbar-right"><span class="auto-save">● Автосохранение в браузере</span><span class="avatar">SL</span></div></header>
+<div id="view" class="view"></div>
+<footer class="footer">SHAURMA LAB © 2026 <span>Внутренняя рабочая модель • финансовые данные — гипотезы до проверки</span></footer>
+</main>
+</div>
+<div class="toast" id="toast" role="status"></div>
+<script type="module" src="./assets/app.js"></script>
+</body></html>
