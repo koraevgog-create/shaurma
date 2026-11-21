@@ -61,7 +61,7 @@ return '<div class="hero-dashboard">'+
 '<p>Бизнес-план и операционный центр проекта в Набережных Челнах. Уникальная концепция — цветная шаурма с собственными вкусами, которая выделяется на рынке.</p>'+
 '<div class="hero-pills"><span class="hero-pill">📍 Набережные Челны</span><span class="hero-pill"><b>ϟ</b> Цветная шаурма</span></div>'+
 '<div class="hero-cta"><button class="btn" data-page="investor">▶ Презентация проекта</button><button class="btn secondary" data-page="finance">▤ Финансовая модель</button></div></div>'+
-'<div class="hero-visual"><img src="./assets/color-shawarma.svg" alt="Зелёная, красная, чёрная и жёлтая шаурма"><div class="hero-handwriting">Цветная<br>шаурма ↘</div></div>'+
+'<div class="hero-visual"><img src="./assets/hero-shawarma.png" onerror="this.onerror=null;this.src='./assets/color-shawarma.svg'" alt="Зелёная, красная, чёрная и жёлтая шаурма"><div class="hero-handwriting">Цветная<br>шаурма ↘</div></div>'+
 '<div class="hero-benefits">'+topItems.map(x=>'<div><span class="benefit-icon">'+x[0]+'</span>'+x[1]+'</div>').join('')+'</div></div>'+
 '<div class="dashboard-kpis">'+kpi("Инвестиции в открытие",money(total),"Бюджет редактируется в смете","▥")+kpi("Простая окупаемость",Number.isFinite(f.returnMonths)?num(f.returnMonths)+" мес.":"—","После выхода на плановые продажи","◷")+kpi("Прибыль / месяц",money(f.profit),"Операционный результат, модель","↗")+kpi("Выручка / месяц",money(f.rev),"При "+state.finance.orders+" заказах в день","♧")+kpi("Безубыточность",Number.isFinite(f.bep)?f.bep+" заказов":"—","Минимум заказов в день","▣")+'</div>'+
 '<div class="dashboard-grid-main">'+
