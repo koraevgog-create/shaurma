@@ -20,3 +20,10 @@ h1,h2,h3,h4,.metric,.side-card strong,.location-price{font-family:Arial,Helvetic
 /* Keep the reference navigation compact, including browsers with classic scrollbars. */
 .sidebar{scrollbar-width:thin;scrollbar-color:#61721b transparent}.sidebar::-webkit-scrollbar{width:4px}.sidebar::-webkit-scrollbar-thumb{background:#61721b;border-radius:4px}.nav-item{padding-left:8px;padding-right:7px;gap:10px}.product-photo{background-size:500% auto}.product-black{background-position:80% 20%}.product-red{background-position:59% 47%}.product-green{background-position:45% 80%}.product-yellow,.product-white{background-position:92% 78%}.brand-product{background-size:360% auto}
 .badge-number,.preview-swatch{font-family:Arial,Helvetica,sans-serif}
+
+/* Individual, fully framed products from the menu atlas. Each tile remains square. */
+.product-photo,.brand-product{background-image:url('./shawarma-menu.webp');background-size:200% 200%;aspect-ratio:1;height:auto;border-radius:7px 7px 0 0;filter:none}
+.product-black{background-position:0 0}.product-red{background-position:100% 0}.product-green{background-position:0 100%}.product-yellow,.product-white{background-position:100% 100%}
+.brand-product{border-radius:12px}.product-white{filter:saturate(.35)}
+/* Fill the tile while keeping the entire wrap, including the closed end, in frame. */
+.product-photo,.brand-product{background-size:240% 240%}.product-black{background-position:7.142857% 7.142857%}.product-red{background-position:92.857143% 7.142857%}.product-green{background-position:7.142857% 92.857143%}.product-yellow,.product-white{background-position:92.857143% 92.857143%}

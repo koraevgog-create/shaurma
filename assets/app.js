@@ -17,7 +17,7 @@ recipes:[
 {id:5,name:"Жёлтая / Сырный удар",color:"yellow",price:390,ingredients:[{name:"Курица, приготовленная",grams:130,costKg:420},{name:"Сырный лаваш",grams:90,costKg:270},{name:"Сыр",grams:45,costKg:620},{name:"Овощи и соус",grams:145,costKg:190}],pack:13,loss:5}],
 budget:[
 ["Аренда и депозит",80000],["Ремонт и электрика (своими силами)",120000],["Вентиляция и монтаж",110000],["Кухонное оборудование",300000],["Мебель и гостевая зона",40000],["Касса и ПО",40000],["Видеонаблюдение",5000],["Вывеска и брендирование",65000],["Продукты и упаковка",55000],["Подготовка и продвижение открытия",65000],["Оборотный резерв",220000]],
-finance:{orders:70,check:390,days:30,ingredients:125,pack:14,acquiring:2,otherVariable:4,tax:6,rent:40000,utilities:20000,payroll:180000,insurance:54000,marketing:16000,software:6000,otherFixed:14000,ownerShiftDays:0,ownerShiftPay:2500},
+finance:{orders:35,check:580,days:30,ingredients:240,pack:14,acquiring:2,otherVariable:4,tax:6,rent:40000,utilities:10000,payroll:55000,insurance:5000,marketing:20000,software:6000,otherFixed:10000,ownerShiftDays:16,ownerShiftPay:2500},
 partnership:{investment:1100000,investorShare:50,managerShare:50,managerSalary:0,investorMonthlyWork:0,managerMonthlyWork:0,notes:"Обсудить доли, роль инвестора, управленческие полномочия, учёт, выплаты, выход и порядок инвестиций."},
 competitors:[
 {name:"Food House",type:"Ключевой сетевой конкурент",note:"Изучить точки, поток, меню и бренд",status:"Не проверено"},
@@ -30,13 +30,32 @@ competitors:[
 {name:"Татбургер (ТЦ 103)",type:"Прямой соседний конкурент",note:"Аудит предложений и потока",status:"Не проверено"},
 {name:"Пекарня (ТЦ 103)",type:"Косвенный соседний конкурент",note:"Уточнить ассортимент",status:"Не проверено"}],
 equipment:[
-["Гриль вертикальный для мяса",55000,"выбрать модель, новую/б/у"],["Контактный гриль / пресс",22000,"оценить производительность"],["Холодильный стол",65000,"проверить вместимость"],["Холодильник и морозильник",55000,"рассмотреть б/у"],["Вытяжной зонт",33000,"проверить с вентиляционной сметой"],["Нержавеющие столы и мойки",30000,"под план помещения"],["Гастроёмкости, доски, ножи",20000,"санитарное разделение"],["Весы, термометры, мелкий инвентарь",12000,"контроль техкарт"],["Резерв комплектации",8000,"подбор по месту"]],
+["Мангал (вертикальный гриль)",50000,"выбрать модель, новую/б/у"],["Контактный гриль / пресс",22000,"оценить производительность"],["Холодильный стол",65000,"проверить вместимость"],["Холодильник и морозильник",55000,"рассмотреть б/у"],["Вытяжной зонт",30000,"проверить с вентиляционной сметой"],["Нержавеющие столы и мойки",30000,"под план помещения"],["Гастроёмкости, доски, ножи",20000,"санитарное разделение"],["Весы, термометры, мелкий инвентарь",12000,"контроль техкарт"],["Резерв комплектации",16000,"подбор по месту"]],
 tasks:["Подтвердить стратегию первой компактной точки","Составить аудит конкурентов и контрольных покупок","Подтвердить точные условия трёх помещений","Замерить трафик каждой перспективной локации","Выбрать помещение и проверить инженерные условия","Узнать поставщиков цветного лаваша и запросить образцы","Протестировать 5 рецептур и определить выход готового блюда","Посчитать фудкост и целевую валовую маржу","Согласовать распределение долей и оплату труда","Подписать договор партнёрства и зафиксировать полномочия","Подобрать и купить оборудование","Согласовать план кухни и вентиляции","Подготовить юридическое оформление и документы общепита","Сделать ремонт, интерьер и вывеску","Настроить кассу, учёт, видеонаблюдение","Нанять и обучить сотрудников","Проверить процессы, безопасность и пробный выпуск","Запустить карту, соцсети и рекламу открытия","Провести мягкое открытие и устранить ошибки","Открыться и управлять KPI первые 90 дней"],
 done:[],selectedLocation:1
 };
 const KEY="shaurma-lab-state-v1";
 let state;
-try{const saved=JSON.parse(localStorage.getItem(KEY)||"{}");state={...structuredClone(defaultState),...saved}}catch{state=structuredClone(defaultState)}
+const BASELINE_VERSION=2;
+const previousFinance={orders:70,check:390,days:30,ingredients:125,pack:14,acquiring:2,otherVariable:4,tax:6,rent:40000,utilities:20000,payroll:180000,insurance:54000,marketing:16000,software:6000,otherFixed:14000,ownerShiftDays:0,ownerShiftPay:2500};
+const previousEquipmentAmounts=[55000,22000,65000,55000,33000,30000,20000,12000,8000];
+function restoreState(saved){
+ const restored={...structuredClone(defaultState),...saved,finance:{...defaultState.finance,...saved.finance}};
+ if((saved.baselineVersion||0)<BASELINE_VERSION){
+  // Update untouched starting values; retain the user's own edits and other project data.
+  for(const key of Object.keys(defaultState.finance))if(restored.finance[key]===previousFinance[key])restored.finance[key]=defaultState.finance[key];
+  if(Array.isArray(saved.equipment))restored.equipment=saved.equipment.map(row=>{
+   const index=defaultState.equipment.findIndex(item=>item[0]===row[0]||(item[0]==='Мангал (вертикальный гриль)'&&row[0]==='Гриль вертикальный для мяса'));
+   if(index<0)return [...row];
+   const updated=[...row];updated[0]=defaultState.equipment[index][0];
+   if(updated[1]===previousEquipmentAmounts[index])updated[1]=defaultState.equipment[index][1];
+   return updated;
+  });
+ }
+ restored.baselineVersion=BASELINE_VERSION;
+ return restored;
+}
+try{state=restoreState(JSON.parse(localStorage.getItem(KEY)||"{}"));localStorage.setItem(KEY,JSON.stringify(state))}catch{state=structuredClone(defaultState)}
 const $=id=>document.getElementById(id);
 const money=n=>Number(n||0).toLocaleString("ru-RU",{maximumFractionDigits:0})+" ₽";
 const num=n=>Number(n||0).toLocaleString("ru-RU",{maximumFractionDigits:1});
@@ -56,7 +75,8 @@ function finance(){const f=state.finance;const orders=Number(f.orders),days=Numb
 const budgetColors=["#dcf22b","#b4ed00","#f1d326","#8dc91c","#a6b29c","#6d9237","#d8a930","#b0bc60","#517d31","#b6d677","#758252"];
 function budgetGradient(){const total=sum(state.budget.map(b=>Math.max(0,+b[1])));let cursor=0;return total?'conic-gradient('+state.budget.map((b,i)=>{const from=cursor;cursor+=Math.max(0,+b[1])/total*100;return budgetColors[i%budgetColors.length]+' '+from+'% '+cursor+'%'}).join(',')+')':'#394133'}
 const launchStages=[["Анализ рынка и выбор локации",[0,1,2,3,4]],["Разработка концепции и меню",[5,6,7]],["Подготовка точки и ремонт",[8,9,11,12,13]],["Закупка и настройка оборудования",[10,14]],["Команда, маркетинг и открытие",[15,16,17,18,19]]];
-let scenario=({70:'base',90:'optimistic',50:'careful'})[state.finance.orders]||'custom';
+const scenarioOrders={base:defaultState.finance.orders,optimistic:50,careful:25};
+let scenario=Object.keys(scenarioOrders).find(id=>scenarioOrders[id]===state.finance.orders)||'custom';
 function dash(){
 const f=finance(), total=sum(state.budget.map(x=>x[1])), completed=state.done.length;
 const kpi=(label,value,note,icon)=>'<div class="card"><div class="metric-label"><span style="color:#e9c13a;margin-right:6px">'+(iconPaths[icon]?'<svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true">'+iconPaths[icon]+'</svg>':icon)+'</span>'+label+'</div><div class="metric">'+value+'</div><div class="metric-note">'+note+'</div></div>';
@@ -121,7 +141,7 @@ function recipes(){return head("Технологические карты","Ре
 function editor(id){const r=state.recipes.find(x=>x.id===id);if(!r)return;const t=recipeCost(r);$("recipeEditor").innerHTML=section("Редактор: "+esc(r.name),"Цена, состав и потери")+
 '<div class="card"><div class="form-grid">'+[["Название","name","text"],["Цвет лаваша (green/black/red/yellow/white/purple)","color","text"],["Цена продажи, ₽","price","number"],["Упаковка, ₽","pack","number"],["Потери, %","loss","number"]].map(x=>field(x[0],"r-"+x[1],r[x[1]],x[2])).join("")+'</div><div class="table-wrap"><table class="table"><thead><tr><th>Ингредиент</th><th>Граммы</th><th>Закупка ₽/кг</th><th>Стоимость</th><th></th></tr></thead><tbody>'+r.ingredients.map((it,i)=>'<tr><td><input class="input" data-rindex="'+i+'" data-rfield="name" type="text" value="'+esc(it.name)+'"></td><td><input class="input" data-rindex="'+i+'" data-rfield="grams" type="number" min="0" value="'+it.grams+'"></td><td><input class="input" data-rindex="'+i+'" data-rfield="costKg" type="number" min="0" value="'+it.costKg+'"></td><td>'+money(it.grams*it.costKg/1000)+'</td><td><button class="btn red small" data-remove-ingredient="'+i+'">×</button></td></tr>').join("")+'</tbody></table></div><div class="row" style="flex-wrap:wrap;margin-top:17px"><button class="btn secondary small" id="addIngredient">+ Ингредиент</button><strong>Себестоимость: '+money(t.all)+'</strong><button class="btn red small" id="deleteRecipe">Удалить карту</button></div></div>';$("recipeEditor").scrollIntoView({behavior:"smooth",block:"start"})}
 let editingRecipe=null;
-function equipment(){return head("Оборудование","Рабочий список для подбора моделей и сравнения новых/б/у предложений. Цены предварительные.")+
+function equipment(){return head("Оборудование","Рабочий список для подбора моделей и сравнения новых/б/у предложений. Цены предварительные.",'<button class="btn secondary small" data-restore="equipment">Вернуть стартовые суммы</button>')+
 '<div class="card"><div class="table-wrap"><table class="table"><thead><tr><th>Позиция</th><th>Бюджет, ₽</th><th>Комментарий</th></tr></thead><tbody>'+state.equipment.map((e,i)=>'<tr><td><strong>'+esc(e[0])+'</strong></td><td><input class="input" type="number" data-equipment="'+i+'" data-column="1" value="'+e[1]+'"></td><td><input class="input" type="text" style="max-width:320px" data-equipment="'+i+'" data-column="2" value="'+esc(e[2])+'"></td></tr>').join("")+'</tbody></table></div><hr class="line"><div class="row"><span>Сумма ориентиров</span><strong class="metric lime">'+money(sum(state.equipment.map(x=>x[1])))+'</strong></div></div>'+
 '<div class="notice warn" style="margin-top:18px">Вентиляция, электромонтаж и комплектация зависят от конкретного помещения. Смета оборудования здесь независима от общей инвестиционной сметы — после выбора моделей перенесите итог в раздел «Смета открытия».</div>'}
 function budget(){let total=sum(state.budget.map(x=>x[1]));return head("Смета открытия","Все статьи инвестиций редактируются. Реальные цены подставим после выбора помещения, поставщиков и оборудования.")+
@@ -129,7 +149,7 @@ function budget(){let total=sum(state.budget.map(x=>x[1]));return head("Смет
 section("Инвестиционные статьи","Можно менять суммы и назначение статей.")+
 '<div class="card"><div class="table-wrap"><table class="table"><thead><tr><th>Статья</th><th>Сумма, ₽</th><th>Доля сметы</th></tr></thead><tbody>'+state.budget.map((b,i)=>'<tr><td><input class="input" style="max-width:450px" data-budget="'+i+'" data-column="0" type="text" value="'+esc(b[0])+'"></td><td><input class="input" type="number" min="0" data-budget="'+i+'" data-column="1" value="'+b[1]+'"></td><td style="min-width:120px"><div class="bar"><span style="width:'+(total?b[1]/total*100:0)+'%"></span></div><span class="small muted">'+(total?num(b[1]/total*100):0)+'%</span></td></tr>').join("")+'</tbody></table></div><hr class="line"><div class="row"><button class="btn secondary small" id="addBudgetItem">+ Добавить статью</button><strong class="metric lime">'+money(total)+'</strong></div></div>'+
 '<div class="notice" style="margin-top:17px">Смета 1,1 млн ₽ рассчитана при ремонте своими силами и экономной покупке оборудования. Учёт реальных договоров, налогов, мебели, доставки и подключения коммуникаций может изменить итог.</div>'}
-function finPage(){const f=state.finance,c=finance();const vars=[["Заказов в день","orders"],["Средний чек, ₽","check"],["Рабочих дней","days"],["Ингредиенты на заказ, ₽","ingredients"],["Упаковка на заказ, ₽","pack"],["Прочие переменные на заказ, ₽","otherVariable"],["Эквайринг, % выручки","acquiring"],["Налог, % выручки (модельно)","tax"]];const fixed=[["Аренда, ₽","rent"],["Коммунальные, ₽","utilities"],["ФОТ без подработки владельца, ₽","payroll"],["Страховые начисления, ₽","insurance"],["Реклама, ₽","marketing"],["Учёт и ПО, ₽","software"],["Прочие постоянные, ₽","otherFixed"],["Ваших смен как повара","ownerShiftDays"],["Оплата вашей смены, ₽","ownerShiftPay"]];return head("Финансовая модель","Интерактивная unit-экономика: затраты, выручка, прибыль и безубыточность. Все поля можно изменять.")+
+function finPage(){const f=state.finance,c=finance();const vars=[["Заказов в день","orders"],["Средний чек, ₽","check"],["Рабочих дней","days"],["Ингредиенты на заказ, ₽","ingredients"],["Упаковка на заказ, ₽","pack"],["Прочие переменные на заказ, ₽","otherVariable"],["Эквайринг, % выручки","acquiring"],["Налог, % выручки (модельно)","tax"]];const fixed=[["Аренда, ₽","rent"],["Коммунальные, ₽","utilities"],["ФОТ без подработки владельца, ₽","payroll"],["Страховые начисления, ₽","insurance"],["Реклама, ₽","marketing"],["Учёт и ПО, ₽","software"],["Прочие постоянные, ₽","otherFixed"],["Ваших смен как повара","ownerShiftDays"],["Оплата вашей смены, ₽","ownerShiftPay"]];return head("Финансовая модель","Интерактивная unit-экономика: затраты, выручка, прибыль и безубыточность. Все поля можно изменять.",'<button class="btn secondary small" data-restore="finance">Вернуть стартовые значения</button>')+
 '<div class="grid grid-4">'+cardMetric("Выручка / месяц",money(c.rev),"Заказов за месяц: "+num(c.sales),"lime")+cardMetric("Переменные расходы",money(c.variable),"Сырьё, упаковка, налог, эквайринг")+cardMetric("Постоянные расходы",money(c.fixed),"Включая оплату ваших смен")+cardMetric("Опер. прибыль",money(c.profit),"До распределения между партнёрами",c.profit>=0?"lime":"red")+'</div>'+
 section("Продажи и переменные расходы")+'<div class="card"><div class="form-grid">'+vars.map(x=>nfield(x[0],x[1],f[x[1]])).join("")+'</div></div>'+
 section("Постоянные расходы и оплата труда")+'<div class="card"><div class="form-grid">'+fixed.map(x=>nfield(x[0],x[1],f[x[1]])).join("")+'</div></div>'+
@@ -164,8 +184,9 @@ section("Условия нужно согласовать")+
 const pages={dashboard:dash,strategy,market,locations,brand,recipes,equipment,budget,finance:finPage,partnership,operations,roadmap,investor};
 function render(){renderNav();$("breadcrumbPage").textContent=menu.find(x=>x[0]===page)?.[2]||"Обзор проекта";$("view").innerHTML=(pages[page]||dash)(); if(page==="recipes"&&editingRecipe)editor(editingRecipe)}
 document.addEventListener("click",ev=>{
+const reset=ev.target.closest('[data-restore]');if(reset){const scope=reset.dataset.restore;if(scope==='finance'||scope==='equipment'){state[scope]=structuredClone(defaultState[scope]);if(scope==='finance')scenario='base';save();render();toast(scope==='finance'?'Стартовая финансовая модель восстановлена':'Стартовые суммы оборудования восстановлены')}return}
 const adjust=ev.target.closest('[data-adjust]');if(adjust){const key=adjust.dataset.adjust;state.finance[key]=Math.max(0,+state.finance[key]+Number(adjust.dataset.delta));scenario='custom';save();render();return}
-const preset=ev.target.closest('[data-scenario]');if(preset){scenario=preset.dataset.scenario;state.finance.orders={base:70,optimistic:90,careful:50}[scenario];save();render();return}
+const preset=ev.target.closest('[data-scenario]');if(preset){scenario=preset.dataset.scenario;state.finance.orders=scenarioOrders[scenario];save();render();return}
 const nav=ev.target.closest("[data-page]");if(nav){go(nav.dataset.page);return}
 const loc=ev.target.closest("[data-select-location]");if(loc){state.selectedLocation=Number(loc.dataset.selectLocation);save();render();return}
 const rec=ev.target.closest("[data-edit-recipe]");if(rec){editingRecipe=Number(rec.dataset.editRecipe);editor(editingRecipe);return}
