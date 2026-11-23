@@ -1,3 +1,5 @@
+import {installWorkspace} from './workspace.js?v=20261123-2';
+let workspace=null;
 const iconPaths={"home": "<path d=\"m3 10 9-7 9 7M5 9v12h5v-7h4v7h5V9\"/>", "strategy": "<circle cx=\"12\" cy=\"12\" r=\"9\"/><circle cx=\"12\" cy=\"12\" r=\"4\"/>", "market": "<circle cx=\"12\" cy=\"12\" r=\"9\"/><path d=\"M3 12h4l3-4 4 8 3-4h4\"/>", "pin": "<path d=\"M20 10c0 6-8 12-8 12S4 16 4 10a8 8 0 1 1 16 0Z\"/><circle cx=\"12\" cy=\"10\" r=\"2.5\"/>", "brand": "<path d=\"M12 2v20M2 12h20M5 5l14 14M5 19 19 5\"/>", "recipes": "<rect x=\"4\" y=\"3\" width=\"16\" height=\"18\" rx=\"1\"/><path d=\"M4 9h16M9 3v18M12 13h5M12 17h5\"/>", "equipment": "<path d=\"m9 3-1 3-3 1 1 3-2 2 2 2-1 3 3 1 1 3h6l1-3 3-1-1-3 2-2-2-2 1-3-3-1-1-3Z\"/><circle cx=\"12\" cy=\"12\" r=\"3\"/>", "budget": "<ellipse cx=\"12\" cy=\"5\" rx=\"8\" ry=\"3\"/><path d=\"M4 5v14c0 4 16 4 16 0V5M4 10c0 4 16 4 16 0M4 15c0 4 16 4 16 0\"/>", "finance": "<path d=\"m3 17 6-6 4 3 8-10M15 4h6v6\"/>", "people": "<circle cx=\"9\" cy=\"7\" r=\"4\"/><path d=\"M2 21v-3a7 7 0 0 1 14 0v3ZM17 4a4 4 0 0 1 0 8M19 15a6 6 0 0 1 3 6\"/>", "operations": "<path d=\"M9 5h12M9 12h12M9 19h12M3 5h1M3 12h1M3 19h1\"/>", "check": "<path d=\"m4 12 5 5L20 5\"/>", "investor": "<path d=\"M4 20V10h4v10ZM10 20V6h4v14ZM16 20V2h4v18Z\"/>", "clock": "<circle cx=\"12\" cy=\"12\" r=\"9\"/><path d=\"M12 6v6l4 2\"/>", "crown": "<path d=\"m3 7 4 4 5-7 5 7 4-4-2 13H5Z\"/>", "rocket": "<path d=\"M14 4c3-2 6-2 7-1 1 5-3 10-8 13l-5-5c2-3 3-5 6-7ZM8 11l-4 1-2 5 6-1M13 16l-1 6 5-2 1-5M6 18l-3 3\"/><circle cx=\"16\" cy=\"8\" r=\"2\"/>", "chef": "<path d=\"M6 12a5 5 0 1 1 2-9 5 5 0 0 1 8 0 5 5 0 1 1 2 9v9H6Z M6 17h12\"/>", "calculator": "<rect x=\"4\" y=\"2\" width=\"16\" height=\"20\" rx=\"2\"/><path d=\"M8 6h8M8 11h1M15 11h1M8 15h1M15 15h1M8 19h1M15 19h1\"/>", "handshake": "<path d=\"m2 7 4-3 5 3 3-2 8 4-4 10-4 2-8-5ZM7 8l-3 7M18 8l3 7M10 9l4-1 3 4-3 2-3-2-3 3M10 17l3 2\"/>", "bolt": "<path d=\"m13 2-9 12h7l-1 8 10-13h-8Z\"/>", "play": "<path d=\"m7 3 14 9-14 9Z\"/>", "briefcase": "<rect x=\"2\" y=\"7\" width=\"20\" height=\"15\" rx=\"2\"/><path d=\"M8 7V3h8v4M2 12h20M10 12v4h4v-4\"/>"};
 function icon(name){return '<svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true">'+(iconPaths[name]||iconPaths.strategy)+'</svg>'}
 const navIcons=["home","strategy","market","pin","brand","recipes","equipment","budget","finance","people","operations","check","investor"];
@@ -61,7 +63,7 @@ const money=n=>Number(n||0).toLocaleString("ru-RU",{maximumFractionDigits:0})+" 
 const num=n=>Number(n||0).toLocaleString("ru-RU",{maximumFractionDigits:1});
 const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 const sum=arr=>arr.reduce((a,b)=>a+Number(b||0),0);
-function save(){try{localStorage.setItem(KEY,JSON.stringify(state))}catch(e){toast("Нет доступа к локальному хранилищу")}}
+function save(){workspace?.sync();try{localStorage.setItem(KEY,JSON.stringify(state))}catch(e){toast("Нет доступа к локальному хранилищу")}}
 function toast(msg){$("toast").textContent=msg;$("toast").classList.add("show");setTimeout(()=>$("toast").classList.remove("show"),2500)}
 function renderNav(){ $("nav").innerHTML=menu.map((x,i)=>'<button class="nav-item '+(page===x[0]?'active':'')+'" data-page="'+x[0]+'"><span class="nav-icon">'+icon(navIcons[i])+'</span>'+x[2]+'</button>').join("") }
 let page="dashboard";
@@ -78,6 +80,7 @@ const launchStages=[["Анализ рынка и выбор локации",[0,1
 const scenarioOrders={base:defaultState.finance.orders,optimistic:50,careful:25};
 let scenario=Object.keys(scenarioOrders).find(id=>scenarioOrders[id]===state.finance.orders)||'custom';
 function dash(){
+scenario=Object.keys(scenarioOrders).find(id=>scenarioOrders[id]===state.finance.orders)||'custom';
 const f=finance(), total=sum(state.budget.map(x=>x[1])), completed=state.done.length;
 const kpi=(label,value,note,icon)=>'<div class="card"><div class="metric-label"><span style="color:#e9c13a;margin-right:6px">'+(iconPaths[icon]?'<svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true">'+iconPaths[icon]+'</svg>':icon)+'</span>'+label+'</div><div class="metric">'+value+'</div><div class="metric-note">'+note+'</div></div>';
 const locs=state.locations.slice(0,3);
@@ -182,6 +185,8 @@ section("Условия нужно согласовать")+
 '<div class="notice warn">Доли, оплата управления, порядок возврата капитала, дополнительные инвестиции, резервы и выход из проекта пока не утверждены. Прогноз прибыли не является гарантированной доходностью.</div>'+
 '<div class="hero-actions"><button class="btn" data-page="partnership">Открыть условия партнёрства</button><button class="btn secondary" data-page="budget">Просмотреть смету</button></div>'}
 const pages={dashboard:dash,strategy,market,locations,brand,recipes,equipment,budget,finance:finPage,partnership,operations,roadmap,investor};
+workspace=installWorkspace({getState:()=>state,setState:value=>{state=value},defaults:defaultState,pages,money,num,esc,head,section,cardMetric,go,toast,save,render});
+save();
 function render(){renderNav();$("breadcrumbPage").textContent=menu.find(x=>x[0]===page)?.[2]||"Обзор проекта";$("view").innerHTML=(pages[page]||dash)(); if(page==="recipes"&&editingRecipe)editor(editingRecipe)}
 document.addEventListener("click",ev=>{
 const reset=ev.target.closest('[data-restore]');if(reset){const scope=reset.dataset.restore;if(scope==='finance'||scope==='equipment'){state[scope]=structuredClone(defaultState[scope]);if(scope==='finance')scenario='base';save();render();toast(scope==='finance'?'Стартовая финансовая модель восстановлена':'Стартовые суммы оборудования восстановлены')}return}
